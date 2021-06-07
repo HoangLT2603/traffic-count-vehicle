@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/nike_logo.png</file>
+    <file>images/nike_shoe.png</file>
+  </qresource>
+</RCC>
