@@ -227,5 +227,5 @@ class Ui_Register(object):
         self.rd_guesst.setText(_translate("Register", "User"))
         self.login_erorr.setText(_translate("Register", "Password is not correct"))
         self.btn_register.setText(_translate("Register", "Register"))
-import nike_app_rc
+
 import traffic_rc

@@ -45,7 +45,8 @@ class Ui_Stream(object):
 "}\n"
 "\n"
 "QPushButton{\n"
-"    background-color: rgb(85, 170, 255);\n"
+"    \n"
+"    background-color: rgb(190, 190, 190);\n"
 "    border-radius: 5px;\n"
 "}")
         self.frame_stream.setObjectName("frame_stream")
@@ -120,7 +121,7 @@ class Ui_Stream(object):
         self.btn_folder_stream.setStyleSheet("")
         self.btn_folder_stream.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/resources/icons/cil-folder-open.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icons/icons/folder-plus.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_folder_stream.setIcon(icon)
         self.btn_folder_stream.setObjectName("btn_folder_stream")
         self.horizontalLayout_6.addWidget(self.btn_folder_stream)
@@ -258,5 +259,4 @@ class Ui_Stream(object):
         self.btn_reset.setText(_translate("Stream", "Reset"))
         self.btn_draw.setText(_translate("Stream", "Draw"))
         self.btn_remove_draw.setText(_translate("Stream", "Remove"))
-import nike_app_rc
 import traffic_rc

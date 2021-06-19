@@ -61,7 +61,12 @@ class MainWindow(QMainWindow):
 
         self.setting = SettingWindow()
         self.lst_lable = []
+        self.lst_btnedit = []
+        self.lst_btnremove = []
         self.start = False
+        self.checkReportPage = False
+        self.settingW = SettingWindow()
+        self.check_setting = False
         self.grid = QGridLayout(self.ui.page_watch)
         self.grid.setContentsMargins(5, 5, 5, 5)
         self.grid.setSpacing(5)
@@ -89,22 +94,44 @@ class MainWindow(QMainWindow):
         self.ui.btn_home.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_home))
         self.ui.btn_watch.clicked.connect(lambda: [self.ui.stackedWidget.setCurrentWidget(self.ui.page_watch), self.clear_label(), self.start_stream()])
         self.ui.btn_stream.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_stream))
-        self.ui.btn_report.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_report))
+        self.ui.btn_report.clicked.connect(lambda: [self.ui.stackedWidget.setCurrentWidget(self.ui.page_report), self.check_report_page()])
         self.ui.btn_setting.clicked.connect(self.show_setting_window)
         self.ui.btn_export.clicked.connect(self.export_data)
         self.ui.btn_submit.clicked.connect(self.submit_data)
+
+        self.thread: List[thread_cam] = []
+        self.th = Thread(target = self.save_data)
+        self.th.start()
         self.load_data_cmb()
         self.ui.btn_add_stream.clicked.connect(self.show_stream_window)
-        self.thread: List[thread_cam] = []
-        self.report_page()
+
+
         self.stream_page()
         self.add_cam()
         # self.showFullScreen()
+    def check_report_page(self):
+        if self.checkReportPage == False:
+            self.submit_data()
+            self.checkReportPage = True
+    def save_data(self):
+        st = SettingWindow()
+        self.timesave = float(st.ui.txt_timesavedata.text())
+        while True:
+            if len(self.thread) > 0:
+                con, cur = MainWindow.connect_db(self)
+                for t in self.thread:
+                    query1 = """INSERT INTO dataStream (IDcam, numCar, numMoto, numBus, numTruck)
+                                                                    VALUES('{}','{}','{}','{}','{}')""".format(t.id,
+                                                                                                               t.car_number,
+                                                                                                               t.moto_number,
+                                                                                                               t.bus_number,
+                                                                                                               t.truck_number)
+                    cur.execute(query1)
+                    con.commit()
+            time.sleep(self.timesave)
     def start_stream(self):
         if self.start == False:
             self.run_thread()
-            # th = saveData()
-            # th.start()
             self.start = True
     def logout(self):
         self.close()
@@ -122,6 +149,7 @@ class MainWindow(QMainWindow):
             self.cams[key] = x
             key = key+1
     def report_page(self, name="All", year="All Year", month="All Month", day="All Day"):
+
 
         if year == "All Year":
             year = "> 0"
@@ -203,6 +231,7 @@ class MainWindow(QMainWindow):
         for x in data_name:
             ckb_name = QCheckBox(self.ui.frame_checkbox)
             ckb_name.setText(x[0])
+            ckb_name.setChecked(True)
             font = QtGui.QFont()
             font.setPointSize(13)
             ckb_name.setFont(font)
@@ -276,6 +305,9 @@ class MainWindow(QMainWindow):
             self.btn_run_stop.button_column = 0
             self.btn_run_stop.clicked.connect(self.run_stop_stream)
             self.ui.table_stream.setCellWidget(roww, 0, self.btn_run_stop)
+            self.lst_btnedit.append(self.btn_edit)
+            self.lst_btnremove.append(self.btn_remove_stream)
+
             roww = roww + 1
     def run_stop_stream(self):
 
@@ -346,7 +378,8 @@ class MainWindow(QMainWindow):
             for x in self.thread:
                 x.start()
     def ImageUpdateSlot(self, Image, index: int):
-        self.lst_lable[index].setPixmap(QPixmap.fromImage(Image))
+        if index < len(self.lst_lable):
+            self.lst_lable[index].setPixmap(QPixmap.fromImage(Image))
     def Stop_thread(self):
         if len(self.thread) > 0:
             for x in self.thread:
@@ -385,10 +418,14 @@ class MainWindow(QMainWindow):
         cursor = conn.cursor()
         return conn, cursor
     def show_setting_window(self):
-        self.s = SettingWindow()
         width, height = pyautogui.size()
-        self.s.setGeometry(width- 400, 60, 400, 500)
-        self.s.show()
+        self.settingW.setGeometry(width - 280, 60, 280, 401)
+        if self.check_setting:
+            self.settingW.hide()
+            self.check_setting = False
+        else:
+            self.settingW.show()
+            self.check_setting = True
     def show_stream_window(self):
         self.w = StreamWindow()
         self.w.show()
@@ -423,12 +460,12 @@ class MainWindow(QMainWindow):
         total_truck = 0
         total_bus = 0
         for name_cam, value_cam in data.items():
-            for row in value_cam:
-                print(row[0])
-                total_moto += row[0]
-                total_car += row[1]
-                total_truck += row[2]
-                total_bus += row[3]
+            if value_cam[0][0] is not None:
+                for row in value_cam:
+                    total_moto += row[0]
+                    total_car += row[1]
+                    total_truck += row[2]
+                    total_bus += row[3]
         series.append('Moto', total_moto)
         series.append('Car', total_car)
         series.append('Truck', total_truck)
@@ -669,11 +706,7 @@ class thread_cam(QThread):
         self.frame_count = 0
         self.max = 0
         self.min = 0
-        self.car_number = 0
-        self.moto_number = 0
-        self.bus_number = 0
-        self.truck_number = 0
-        self.total_number = 0
+        self.min_conf_thresh = SettingWindow().ui.spb_thresh.text()
         self.obj_cnt = 0
         self.curr_trackers = []
         self.check_thresh = False
@@ -700,6 +733,11 @@ class thread_cam(QThread):
 
     def tracking_detect(self, frame):
         start = time.time()
+        self.car_number = 0
+        self.moto_number = 0
+        self.bus_number = 0
+        self.truck_number = 0
+        self.total_number = 0
 
         n = len(self.point)
         if n >= 3:
@@ -751,7 +789,7 @@ class thread_cam(QThread):
         # Thuc hien object detection moi 5 frame
         if self.frame_count % 5 == 0:
             # Detect doi tuong
-            boxes_d, classed = model.get_object(frame, detect_fn)
+            boxes_d, classed = model.get_object(frame, detect_fn,  float(self.min_conf_thresh))
 
             for i in range(len(boxes_d)):
                 #old_obj = False
@@ -980,12 +1018,22 @@ class SettingWindow(QMainWindow):
         self.shadow.setColor(QColor(0, 0, 0, 120))
         self.ui.centralwidget.setGraphicsEffect(self.shadow)
         self.ui.cmb_gridLayout.currentIndexChanged.connect(lambda: window.wd_main.watch_page(self.ui.cmb_gridLayout.currentText()))
-        self.ui.btn_close.clicked.connect(self.close)
+        # self.ui.btn_close.clicked.connect(self.hide)
         self.ui.btn_register.clicked.connect(self.showSettingForm)
+        self.ui.txt_timesavedata.textChanged.connect(self.timeSaveDataChange)
+        self.ui.spb_thresh.valueChanged.connect(self.threshChange)
     def showSettingForm(self):
         register = Register()
         register.show()
         self.close()
+    def timeSaveDataChange(self):
+        # window.wd_main.th
+        window.wd_main.timesave = float(self.ui.txt_timesavedata.text())
+    def threshChange(self):
+        # self.ui.spb_thresh.setValue(float(self.ui.spb_thresh.text()))
+        if len(window.wd_main.thread) > 0:
+            for th in window.wd_main.thread:
+                th.min_conf_thresh = self.ui.spb_thresh.text()
 
 class Forgot(QMainWindow):
     def __init__(self):
@@ -1179,9 +1227,18 @@ class LoginForm(QMainWindow):
         forgot = Forgot()
         forgot.show()
 
-    def show_new_window(self):
+    def show_new_window(self, role):
         self.close()
         self.wd_main = MainWindow()
+        if role == 'user':
+            for edit in self.wd_main.lst_btnedit:
+                edit.setEnabled(False)
+            for remove in self.wd_main.lst_btnremove:
+                remove.setEnabled(False)
+            self.wd_main.ui.btn_export.setEnabled(False)
+            self.wd_main.settingW.ui.spb_thresh.setEnabled(False)
+            self.wd_main.settingW.ui.txt_timesavedata.setEnabled(False)
+            self.wd_main.settingW.ui.btn_register.setEnabled(False)
         self.wd_main.showFullScreen()
 
     def button_click(self):
@@ -1211,12 +1268,6 @@ class LoginForm(QMainWindow):
             passw = row[1]
             role = row[3]
         if username1 == id and password1 == passw:
-            if role == 'admin':
-                self.ui.login_erorr.setText("mày là admin")
-                self.ui.login_erorr.show()
-            else:
-                self.ui.login_erorr.setText("mày là cùi bắp :3")
-                self.ui.login_erorr.show()
             if self.ui.check_login.isChecked():
                 self.keeplogin.setValue('username', self.ui.username_line.text())
                 self.keeplogin.setValue('password', self.ui.password_line.text())
@@ -1224,7 +1275,7 @@ class LoginForm(QMainWindow):
                 self.keeplogin.setValue('username', "")
                 self.keeplogin.setValue('password', "")
 
-            self.show_new_window()
+            self.show_new_window(role)
         else:
             self.ui.login_erorr.show()
             if self.check_fail_login >= 4:
@@ -1271,31 +1322,6 @@ class ChangePass(QMainWindow):
         loginwindow = LoginForm()
         loginwindow.show()
         self.close()
-
-class saveData(QThread):
-    def __init__(self):
-        QThread.__init__(self)
-        self.save()
-    def save(self):
-        print("ok")
-        # thr = window.wd_main.thread
-        # if len(thr) > 0:
-        #     con, cur = MainWindow.connect_db(self)
-        #     for t in thr:
-        #
-        #         query1 = """INSERT INTO dataStream (IDcam, numCar, numMoto, numBus, numTruck)
-        #                                                         VALUES('{}','{}','{}','{}','{}')""".format(t.id,
-        #                                                                                                    t.car_number,
-        #                                                                                                    t.moto_number,
-        #                                                                                                    t.bus_number,
-        #                                                                                                    t.truck_number)
-        #         print("save success")
-        #         cur.execute(query1)
-        #         con.commit()
-        #     cur.close()
-        #     con.close()
-        time.sleep(20)
-        self.save()
 
 
 if __name__ == "__main__":

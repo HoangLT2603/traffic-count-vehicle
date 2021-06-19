@@ -53,7 +53,7 @@ def load_image_into_numpy_array(path):
     return np.array(Image.open(path))
 
 #lấy box,class của các đối tượng
-def get_object(frame,detect_fn):
+def get_object(frame,detect_fn,min_conf_thresh):
     #convert image sang hệ màu BGR
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     frame_expanded = np.expand_dims(frame_rgb, axis=0)
@@ -87,7 +87,7 @@ def get_object(frame,detect_fn):
     box = []
     class_ = []
     for i in range(len(scores)):
-        if ((scores[i] > MIN_CONF_THRESH) and (scores[i] <= 1.0)):
+        if ((scores[i] > min_conf_thresh) and (scores[i] <= 1.0)):
             ymin = int(max(1, (boxes[i][0] * imH)))
             xmin = int(max(1, (boxes[i][1] * imW)))
             ymax = int(min(imH, (boxes[i][2] * imH)))
