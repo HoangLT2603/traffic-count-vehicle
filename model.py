@@ -92,7 +92,7 @@ def get_object(frame,detect_fn,min_conf_thresh):
             xmin = int(max(1, (boxes[i][1] * imW)))
             ymax = int(min(imH, (boxes[i][2] * imH)))
             xmax = int(min(imW, (boxes[i][3] * imW)))
-            boxx=[xmin,ymin,xmax-xmin, ymax-ymin]
+            boxx=[xmin, ymin, xmax-xmin, ymax-ymin]
             box.append(boxx)
             class_name = category_index[int(classes[i])]['name']
             class_.append(class_name)

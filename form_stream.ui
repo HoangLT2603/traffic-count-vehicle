@@ -309,7 +309,7 @@ QPushButton{
          </property>
          <property name="maximumSize">
           <size>
-           <width>110</width>
+           <width>210</width>
            <height>16777215</height>
           </size>
          </property>
@@ -326,7 +326,7 @@ QPushButton{
           <string notr="true">color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>Threshold</string>
+          <string>Warning threshold</string>
          </property>
         </widget>
        </item>

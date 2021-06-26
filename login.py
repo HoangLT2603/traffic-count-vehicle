@@ -124,42 +124,18 @@ class Ui_Login(object):
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
         self.gridLayout = QtWidgets.QGridLayout(self.frame)
-        self.gridLayout.setContentsMargins(30, -1, 30, -1)
-        self.gridLayout.setHorizontalSpacing(0)
-        self.gridLayout.setVerticalSpacing(5)
+        self.gridLayout.setContentsMargins(0, -1, 0, -1)
+        self.gridLayout.setSpacing(10)
         self.gridLayout.setObjectName("gridLayout")
-        self.login_erorr = QtWidgets.QLabel(self.frame)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        font.setBold(True)
-        font.setWeight(75)
-        self.login_erorr.setFont(font)
-        self.login_erorr.setStyleSheet("color: rgb(191, 0, 0);")
-        self.login_erorr.setObjectName("login_erorr")
-        self.gridLayout.addWidget(self.login_erorr, 3, 0, 1, 1)
-        self.check_login = QtWidgets.QCheckBox(self.frame)
-        self.check_login.setStyleSheet("QCheckBox{\n"
-"    color: rgb(255,255,255);\n"
-"    padding: 10px;\n"
-"    \n"
-"    \n"
-"    background-color: rgb(27, 27, 27);\n"
-"    \n"
-"    border-radius: 15px; \n"
-"}\n"
-"\n"
-"")
-        self.check_login.setObjectName("check_login")
-        self.gridLayout.addWidget(self.check_login, 4, 0, 1, 1)
         self.btn_login = QtWidgets.QPushButton(self.frame)
-        self.btn_login.setMinimumSize(QtCore.QSize(150, 50))
+        self.btn_login.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
         self.btn_login.setFont(font)
         self.btn_login.setStyleSheet("QPushButton{\n"
-"    background-color: qlineargradient(spread:pad,x1:0, y1:0.505682,x2:1,y2:0.477,stop:0 rgba(11,131,120.219),stop:1 rgna(85,98,112,226));\n"
+"    background-color: qlineargradient(spread:pad,x1:0, y1:0.505682,x2:1,y2:0.477,stop:0 #000099,stop:1 #66ccff);\n"
 "    color:rgba(255,255,255,210);\n"
 "    border-radius:15px;\n"
 "\n"
@@ -174,6 +150,52 @@ class Ui_Login(object):
 "}")
         self.btn_login.setObjectName("btn_login")
         self.gridLayout.addWidget(self.btn_login, 5, 0, 1, 1)
+        self.btn_register = QtWidgets.QPushButton(self.frame)
+        self.btn_register.setMinimumSize(QtCore.QSize(0, 50))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.btn_register.setFont(font)
+        self.btn_register.setStyleSheet("QPushButton{\n"
+"    background-color: qlineargradient(spread:pad,x1:0, y1:0.505682,x2:1,y2:0.477,stop:0 #006600,stop:1 #00ff00);\n"
+"    color:rgba(255,255,255,210);\n"
+"    border-radius:15px;\n"
+"\n"
+"}\n"
+"QPushButton:hover{\n"
+"    background-color: qlineargradient(spread:pad,x1:0, y1:0.505682,x2:1,y2:0.477,stop:0 rgba(11,123,111.219),stop:1 rgna(85,81,84,226));\n"
+"}\n"
+"QPushButton:pressed{\n"
+"    padding-left:5px;\n"
+"    padding-top:5px;\n"
+"    background-color:rgba(150,123,111,255);\n"
+"}")
+        self.btn_register.setObjectName("btn_register")
+        self.gridLayout.addWidget(self.btn_register, 5, 1, 1, 1)
+        self.check_login = QtWidgets.QCheckBox(self.frame)
+        self.check_login.setStyleSheet("QCheckBox{\n"
+"    color: rgb(255,255,255);\n"
+"    padding: 10px;\n"
+"    \n"
+"    \n"
+"    background-color: rgb(27, 27, 27);\n"
+"    \n"
+"    border-radius: 15px; \n"
+"}\n"
+"\n"
+"")
+        self.check_login.setObjectName("check_login")
+        self.gridLayout.addWidget(self.check_login, 4, 0, 1, 2)
+        self.login_erorr = QtWidgets.QLabel(self.frame)
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        font.setBold(True)
+        font.setWeight(75)
+        self.login_erorr.setFont(font)
+        self.login_erorr.setStyleSheet("color: rgb(191, 0, 0);")
+        self.login_erorr.setObjectName("login_erorr")
+        self.gridLayout.addWidget(self.login_erorr, 3, 0, 1, 2)
         self.btn_forgot = QtWidgets.QPushButton(self.frame)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -184,7 +206,7 @@ class Ui_Login(object):
 "QPushButton:hover{\n"
 "color: rgb(255, 30, 30);}")
         self.btn_forgot.setObjectName("btn_forgot")
-        self.gridLayout.addWidget(self.btn_forgot, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.btn_forgot, 6, 0, 1, 2)
         self.verticalLayout_3.addWidget(self.frame)
         self.verticalLayout.addWidget(self.input_fields_frame)
         Login.setCentralWidget(self.centralwidget)
@@ -197,8 +219,9 @@ class Ui_Login(object):
         Login.setWindowTitle(_translate("Login", "MainWindow"))
         self.username_line.setPlaceholderText(_translate("Login", "Username"))
         self.password_line.setPlaceholderText(_translate("Login", "Password"))
-        self.login_erorr.setText(_translate("Login", "Authentication Failed"))
-        self.check_login.setText(_translate("Login", "Keep me logged in"))
         self.btn_login.setText(_translate("Login", "Login"))
+        self.btn_register.setText(_translate("Login", "Register"))
+        self.check_login.setText(_translate("Login", "Keep me logged in"))
+        self.login_erorr.setText(_translate("Login", "Authentication Failed"))
         self.btn_forgot.setText(_translate("Login", "Forgot password ?"))
 import traffic_rc

@@ -1,6 +1,11 @@
 <RCC>
   <qresource prefix="icons">
     <file>icons/login_icon.png</file>
+    <file>icons/webcam-icon-64.png</file>
+    <file>icons/motorcycle-icon-64.png</file>
+    <file>icons/car-icon-64.png</file>
+    <file>icons/truck-icon-64.ico</file>
+    <file>icons/bus-icon-64.png</file>
     <file>icons/icon-edit.png</file>
     <file>icons/activity.svg</file>
     <file>icons/airplay.svg</file>
